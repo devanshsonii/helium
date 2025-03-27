@@ -4,55 +4,8 @@
 #include <vector>
 #include <sstream>
 
-enum class Tokens {
-    _RETURN,
-    INT_LITERAL,
-    SEMI_COLON
-};
 
-struct Token {
-    Tokens type;
-    std::string value;
-};
-
-void tokenize(std::string &str, std::vector<Token> &tokens) {
-    // str is a single complete line 
-    // process the line and append the tokens to the tokens vectors.
-    std::string buf;
-    for (int i = 0; i < str.length(); i++) {
-        const char c = str[i];
-        if(isalpha(c)) {
-            buf += c;
-            i++;
-            while(isalpha(str[i])){
-                buf += str[i];
-                i++;
-            }
-            i--;
-            if(buf == "return") {
-                tokens.push_back({.type = Tokens::_RETURN, .value = buf});
-                buf = "";
-            }
-        } else if(isdigit(c)) {
-            buf += c;
-            i++;
-            while(isdigit(str[i])) {
-                buf += str[i];
-                i++;
-            }
-            i--;
-            tokens.push_back({.type = Tokens::INT_LITERAL, .value = buf});
-            buf = "";
-        } else if(isspace(c)) {
-            continue;
-        } else if(c == ';') {
-            tokens.push_back({.type = Tokens::SEMI_COLON, .value = ";"});
-        } else {
-            std::cerr << "Something went wrong!" << "\n";
-        }
-    }
-    
-}
+#include "tokenizer.hpp"
 
 void write_to_assembly(std::vector<Token> &tokens) {
     std::ofstream out("out.s");
@@ -68,11 +21,16 @@ void write_to_assembly(std::vector<Token> &tokens) {
 
 int main(int argc, char *argv[]) {
     // argv[1]: path to the .he file
+    if(argc < 2) {
+        std::cerr << "Invalid usage.\nCorrect Usage: Helium file.he\n";
+        return 1;
+    }
     std::ifstream file(argv[1]);
     std::string content;
     std::vector<Token> tokens;
+    Tokenizer tokenizer;
     while(std::getline(file, content)){
-        tokenize(content, tokens);
+        tokens = tokenizer.tokenize(content);
     }
     write_to_assembly(tokens);
     return 0;
