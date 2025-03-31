@@ -31,7 +31,7 @@ public:
                     buf.clear();
                 }   
             } else if(isdigit(peek().value())) {
-                buf += consume();
+                buf = consume();
                 while(isdigit(peek().value())) {
                     buf += consume();
                 }
