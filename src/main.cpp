@@ -5,7 +5,8 @@
 #include <sstream>
 
 #include "generator.hpp"
-
+#include "tokenizer.hpp"
+#include "parser.hpp"
 
 int main(int argc, char *argv[]) {
     // argv[1]: path to the .he file
@@ -21,9 +22,10 @@ int main(int argc, char *argv[]) {
     while(std::getline(file, content)){
         tokens = tokenizer.tokenize(content);
     }
-    
+
     Parser parser(std::move(tokens));
     std::optional<ExitNode> exit_node = parser.parse();
+    
     if(exit_node.has_value()) {
         Generator generator(exit_node.value());
         generator.generate();

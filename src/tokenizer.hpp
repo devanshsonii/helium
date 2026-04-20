@@ -4,7 +4,9 @@
 enum class TokenType {
     _RETURN,
     INT_LITERAL,
-    SEMI_COLON
+    SEMI_COLON,
+    OPEN_PAREN,
+    CLOSE_PAREN
 };
 
 struct Token {
@@ -39,23 +41,29 @@ public:
                 buf.clear();
             } else if(isspace(peek().value())) {
                 consume();
-            } else if(peek().value() == ';') {
+            } else if(peek().value() == '(') {
+                tokens.push_back({.type = TokenType::OPEN_PAREN});
                 consume();
+            } else if(peek().value() == ')') {
+                tokens.push_back({.type = TokenType::CLOSE_PAREN});
+                consume();
+            } else if(peek().value() == ';') {
                 tokens.push_back({.type = TokenType::SEMI_COLON, .value = ";"});
+                consume();
                 buf.clear();
             } else {
-                std::cerr << "Something went wrong in tokenizer\n";
+                std::cerr << "Unexpected token received.\n";
                 exit(EXIT_FAILURE);
             }
         }
         return tokens;
     }
 private:
-    inline std::optional<char> peek(int val = 1) const {
-        if(index + val > src.length()) {
+    inline std::optional<char> peek(int val = 0) const {
+        if(index + val >= src.length()) {
             return {};
         } else {
-            return src[index];
+            return src[index+val];
         }
     }
     inline char consume() {
