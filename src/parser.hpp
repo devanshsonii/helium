@@ -16,28 +16,29 @@ updated grammar:
         IntLiteralNode
 
 */
-struct ExprNode {
-    std::variant<IntLiteralNode, IdentifierNode> var;
-};
-
-struct ExitNode {
-    ExprNode expr;
-};
-
-
-struct ProgramNode {
-    std::vector<LineNode> linenodes;
-
-};
-struct LineNode {
-    std::variant<ExitNode, IdentifierNode> var;
-};
-struct IdentifierNode{
-
+struct ExitNode;
+struct IdentifierNode;
+struct IntLiteralNode;
+struct IdentifierNode {
+    Token tkn;
 };
 struct IntLiteralNode {
     Token tkn;
 };
+struct ExprNode {
+    std::variant<IntLiteralNode, IdentifierNode> var;
+};
+struct ExitNode {
+    ExprNode expr;
+};
+
+struct LineNode {
+    std::variant<ExitNode, IdentifierNode> var;
+};
+
+struct ProgramNode {
+    std::vector<LineNode> linenodes;
+};;
 
 
 
@@ -48,7 +49,7 @@ public:
 // what does a parser return? -> a parse tree (need nodes and stuff for the tree)
     std::optional<ExprNode> parseExpr() {
         if(peek().has_value() && peek().value().type == TokenType::INT_LITERAL) {
-            return ExprNode{.int_lit = consume()};
+            return ExprNode{ .var = IntLiteralNode{ .tkn = consume() }};
         } else {
             return {};
         }
